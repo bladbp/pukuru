@@ -89,8 +89,7 @@ function App() {
   };
 
   if (sorted_list.length !== 0) {
-    console.log(sorted_list.map(({name}) => name).join("\n"));
-    return <h1>DONE</h1>;
+    return <p>{sorted_list.map(({name}) => name).join("\n")}</p>;
   }
 
   return cards ? (
