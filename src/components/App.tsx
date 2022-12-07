@@ -36,7 +36,7 @@ function App() {
         top_animes = JSON.parse(ls_animes);
       } else {
         const top_anime_pages: Card[] = [];
-        for (let i = 1; i <= 5; i += 1) {
+        for (let i = 1; i <= 4; i += 1) {
           const animes = await fetch(
             "https://api.jikan.moe/v4/top/anime?page=" + i
           )
