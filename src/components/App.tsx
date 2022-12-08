@@ -7,6 +7,13 @@ interface Card {
   image_src: string;
 }
 
+type State = {
+  sorted: Card[];
+  size: number;
+  leftStart: number;
+  buffer: Card[];
+};
+
 const IMG_A = "https://artfiles.alphacoders.com/105/105432.jpg";
 const IMG_B =
   "https://m.media-amazon.com/images/M/MV5BOTY5NWJkMTMtZTcwMC00NzQyLWJiMzEtZTcwMzI3MTZkNjIwXkEyXkFqcGdeQXVyMzExMzk5MTQ@._V1_.jpg";
@@ -21,7 +28,7 @@ const MOCK_ANIMES = [
 ];
 
 function App() {
-  const sorter_ref = useRef<Generator<[Card, Card], Card[], boolean>>(
+  const sorter_ref = useRef<Generator<[Card, Card, State], Card[], boolean>>(
     mergeSort([])
   );
   const [cards, set_cards] = useState<null | [Card, Card]>();
@@ -29,14 +36,23 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      let top_animes: Card[] = [];
-      const ls_animes = localStorage.getItem("animes");
+      let sorted: Card[] | undefined;
+      let size: number | undefined;
+      let leftStart: number | undefined;
+      let buffer: Card[] | undefined;
 
-      if (ls_animes !== null) {
-        top_animes = JSON.parse(ls_animes);
+      const sort_state = localStorage.getItem("sort_state");
+
+      if (sort_state !== null) {
+        const state: State = JSON.parse(sort_state);
+        console.log(state);
+        sorted = state.sorted;
+        size = state.size;
+        leftStart = state.leftStart;
+        buffer = state.buffer;
       } else {
         const top_anime_pages: Card[] = [];
-        for (let i = 1; i <= 3; i += 1) {
+        for (let i = 1; i <= 4; i += 1) {
           const animes = await fetch(
             "https://api.jikan.moe/v4/top/anime?page=" + i
           )
@@ -53,17 +69,19 @@ function App() {
                   }
             );
           top_anime_pages.push(animes);
-          await new Promise((res) => setTimeout(res, 1000 / 3));
+          if (i % 3 == 0) {
+            await new Promise((res) => setTimeout(res, 1000));
+          }
         }
-        top_animes = top_anime_pages.flat();
-        localStorage.setItem("animes", JSON.stringify(top_animes));
+        sorted = top_anime_pages
+          .flat()
+          .filter((str) => str.name.toLocaleLowerCase().includes("gintama"));
       }
-
-      sorter_ref.current = mergeSort(top_animes);
+      sorter_ref.current = mergeSort(sorted, size, leftStart, buffer);
       const cards_iter = sorter_ref.current.next();
 
       if (!cards_iter.done) {
-        set_cards(cards_iter.value);
+        setCards(cards_iter.value);
       }
     })();
   }, []);
@@ -74,8 +92,13 @@ function App() {
     if (cards_iter.done) {
       set_sorted_list(cards_iter.value);
     } else {
-      set_cards(cards_iter.value);
+      setCards(cards_iter.value);
     }
+  };
+
+  const setCards = (cards: [Card, Card, State]) => {
+    localStorage.setItem("sort_state", JSON.stringify(cards[2]));
+    set_cards([cards[0], cards[1]]);
   };
 
   const handleClickRight = () => {
@@ -84,7 +107,7 @@ function App() {
     if (cards_iter.done) {
       set_sorted_list(cards_iter.value);
     } else {
-      set_cards(cards_iter.value);
+      setCards(cards_iter.value);
     }
   };
 
