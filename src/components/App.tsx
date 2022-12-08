@@ -75,7 +75,7 @@ function App() {
         }
         sorted = top_anime_pages
           .flat()
-          .filter((str) => str.name.toLocaleLowerCase().includes("gintama"));
+          .filter((str) => !str.name.toLocaleLowerCase().includes("gintama"));
       }
       sorter_ref.current = mergeSort(sorted, size, leftStart, buffer);
       const cards_iter = sorter_ref.current.next();
