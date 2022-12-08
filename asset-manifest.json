@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/pukuru/static/css/main.12f08e15.css",
+    "main.js": "/pukuru/static/js/main.3dff20ff.js",
+    "index.html": "/pukuru/index.html",
+    "main.12f08e15.css.map": "/pukuru/static/css/main.12f08e15.css.map",
+    "main.3dff20ff.js.map": "/pukuru/static/js/main.3dff20ff.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.12f08e15.css",
+    "static/js/main.3dff20ff.js"
+  ]
+}
